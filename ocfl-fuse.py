@@ -222,23 +222,50 @@ class OCFLFS(Fuse):
     # int(* 	readdir )(const char *, void *, fuse_fill_dir_t, off_t, struct fuse_file_info *, enum fuse_readdir_flags)
     def readdir(self, path, offset):
         logging.info("READDIR: " + path)
+        for r in '.', '..':
+            yield fuse.Direntry(r)
         # Root of our OCFL store
         if path == '/':
-            for r in  (['.', '..', object_path[1:]] + [folder[1:] for folder in self.folders]):
+            for r in  [self.object_path[1:]]:
                 yield fuse.Direntry(r)
         # The object path
-        elif path == object_path:
-            for oid in (['.', '..'] + self.ocflpy.list_object_ids()):
-                yield fuse.Direntry(oid)
-        # Somewhere in one of the objects
-        # elif path.startswith(object_path):
-            # Try to find the path
-            # Find the most recent version
-            # List inventory
-        # Otherwise just give . and ..
-        else:
-            for r in '.', '..':
-                yield fuse.Direntry(r)
+        elif path == self.object_path:
+            for oid in self.ocflpy.list_object_ids():
+                normalized_id=self.ocflpy.encode_id(oid)
+                yield fuse.Direntry(normalized_id)
+        # A folder somewhere deeper in the object
+        elif path in self.current_object_dirs:
+            for file in self.ocflpy.list_object_files(self.current_object_id):
+                object_id = self.ocflpy.encode_id(self.current_object_id)
+                object_folder=path.replace(os.path.join(self.object_path,object_id)+ "/","")
+                if file.startswith(object_folder):
+                    stripped_file = file.replace(object_folder+"/","")
+                    if "/" in stripped_file:
+                        # Handle next level of folders
+                        path_split=stripped_file.split("/")
+                        self.current_object_dirs.append(os.path.join(path,path_split[0]))
+                        yield fuse.Direntry(path_split[0])
+                    else:
+                        # Plain file
+                        self.current_object_files.append(os.path.join(path,stripped_file))
+                        yield fuse.Direntry(stripped_file)
+        split_path=os.path.split(path)
+        # Files in one of the objects
+        if split_path[0] == self.object_path:
+            # get object id
+            object_id=split_path[1]
+            self.current_object_id=self.ocflpy.decode_id(object_id)
+            # get file list for id
+            for file in self.ocflpy.list_object_files(self.current_object_id):
+                if "/" in file:
+                    # Handle first level of folders
+                    path_split=file.split("/")
+                    self.current_object_dirs.append(os.path.join(path,path_split[0]))
+                    yield fuse.Direntry(path_split[0])
+                else:
+                    # Plain file
+                    self.current_object_files.append(os.path.join(path,file))
+                    yield fuse.Direntry(file)
                 
     # # int(* 	releasedir )(const char *, struct fuse_file_info *)
     # def releasedir(self, path):
