@@ -32,14 +32,21 @@ class MyStat(fuse.Stat):
         self.st_mtime = 0
         self.st_ctime = 0
 
-object_path = "/objects"
-
 class OCFLFS(Fuse):
 
     def __init__(self, *args, **kw):
         Fuse.__init__(self, *args, **kw)
         self.root = "."
-        self.folders=[]
+        # The main folder
+        self.object_path = "/objects"
+        # Keep track of the current project id
+        self.current_object_id = ""
+        # Keep track of the files in the current object
+        self.current_object_files=[]
+        # Keep track of the directories in the current object
+        self.current_object_dirs=[]
+        # Mapping normalized object ids back to the original ones
+        # self.id_map={}
 
     # int(* 	getattr )(const char *, struct stat *, struct fuse_file_info *fi)
     def getattr(self, path):
