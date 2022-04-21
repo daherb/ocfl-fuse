@@ -90,6 +90,8 @@ class OCFLPY():
     
     # Revert a staged object
     def revert_object(self,id):
-        # Just remove the complete folder from staging
-        shutil.rmtree(get_staging_object_path(id))
-        return 0    
+        # Check if the object is actually staged
+        if id in self.staging_objects:
+            # Just remove the complete folder from staging
+            shutil.rmtree(self.get_staging_object_path(id))
+        return 0
