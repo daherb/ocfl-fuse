@@ -282,9 +282,16 @@ class OCFLFS(Fuse):
     # int(* 	access )(const char *, int)
     def access(self, path, x):
         logging.info("ACCESS: " + path)
-        if path.startswith(object_path) and path != object_path:
-            object_id=path[len(object_path)+1:]
-            self.ocflpy.open_object(object_id)
+        if path == self.object_path:
+            # Revert if we change back into the object path
+            if self.current_object_id != "":
+                self.ocflpy.revert_object(self.current_object_id)
+                self.current_object_id = ""
+        split_path=os.path.split(path)
+        if split_path[0] == self.object_path and split_path[1] != "":
+            object_id=split_path[1]
+            id=self.ocflpy.decode_id(object_id)
+            self.ocflpy.open_object(id)
         return 0
     
     # int(* 	create )(const char *, mode_t, struct fuse_file_info *)
