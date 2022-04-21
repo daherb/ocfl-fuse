@@ -68,61 +68,60 @@ class OCFLFS(Fuse):
              return -errno.ENOENT
         return st
 
-    # int(* 	readlink )(const char *, char *, size_t)
-    def readlink(self, path):
-        logging.info("READLINK: " + path)
-        return 0
+    # # int(* 	readlink )(const char *, char *, size_t)
+    # def readlink(self, path):
+    #     logging.info("READLINK: " + path)
+    #     return 0
     
-    # int(* 	mknod )(const char *, mode_t, dev_t)
-    def mknod(self, path, mode, dev):
-        logging.info("MKNOD: " + path)
-        return 0
+    # # int(* 	mknod )(const char *, mode_t, dev_t)
+    # def mknod(self, path, mode, dev):
+    #     logging.info("MKNOD: " + path)
+    #     return 0
 
-    # int(* 	mkdir )(const char *, mode_t)
-    def mkdir(self, path,mode):
-        logging.info("MKDIR: " + path)
-        self.folders.append(path)
-        return 0
+    # # int(* 	mkdir )(const char *, mode_t)
+    # def mkdir(self, path,mode):
+    #     logging.info("MKDIR: " + path)
+    #     return 0
     
-    # int(* 	unlink )(const char *)
-    def unlink(self, path):
-        logging.info("UNLINK: " + path)
-        return 0
+    # # int(* 	unlink )(const char *)
+    # def unlink(self, path):
+    #     logging.info("UNLINK: " + path)
+    #     return 0
     
-    # int(* 	rmdir )(const char *)
-    def rmdir(self, path):
-        logging.info("RMDIR: " + path)
-        return 0
+    # # int(* 	rmdir )(const char *)
+    # def rmdir(self, path):
+    #     logging.info("RMDIR: " + path)
+    #     return 0
     
-    # int(* 	symlink )(const char *, const char *)
-    def symlink(self, target, path):
-        logging.info("SYMLINK: " + path)
-        return 0
+    # # int(* 	symlink )(const char *, const char *)
+    # def symlink(self, target, path):
+    #     logging.info("SYMLINK: " + path)
+    #     return 0
     
-    # int(* 	rename )(const char *, const char *, unsigned int flags)
-    def rename(self, oldpath, path, flags):
-        logging.info("RENAME: " + path)
-        return 0
+    # # int(* 	rename )(const char *, const char *, unsigned int flags)
+    # def rename(self, oldpath, path, flags):
+    #     logging.info("RENAME: " + path)
+    #     return 0
     
-    # int(* 	link )(const char *, const char *)
-    def link(self, oldpath, path):
-        logging.info("LINK: " + path)
-        return 0
+    # # int(* 	link )(const char *, const char *)
+    # def link(self, oldpath, path):
+    #     logging.info("LINK: " + path)
+    #     return 0
     
-    # int(* 	chmod )(const char *, mode_t, struct fuse_file_info *fi)
-    def chmod(self, path, mode):
-        logging.info("CHMOD: " + path)
-        return 0
+    # # int(* 	chmod )(const char *, mode_t, struct fuse_file_info *fi)
+    # def chmod(self, path, mode):
+    #     logging.info("CHMOD: " + path)
+    #     return 0
     
-    # int(* 	chown )(const char *, uid_t, gid_t, struct fuse_file_info *fi)
-    def chown(self, path, user, group):
-        logging.info("CHOWN: " + path)
-        return 0
+    # # int(* 	chown )(const char *, uid_t, gid_t, struct fuse_file_info *fi)
+    # def chown(self, path, user, group):
+    #     logging.info("CHOWN: " + path)
+    #     return 0
     
-    # int(* 	truncate )(const char *, off_t, struct fuse_file_info *fi)
-    def truncate(self, path, length):
-        logging.info("TRUNCATE: " + path)
-        return 0
+    # # int(* 	truncate )(const char *, off_t, struct fuse_file_info *fi)
+    # def truncate(self, path, length):
+    #     logging.info("TRUNCATE: " + path)
+    #     return 0
     
     # int(* 	open )(const char *, struct fuse_file_info *)
     def open(self, path, flags):
@@ -153,55 +152,55 @@ class OCFLFS(Fuse):
     #         buf = b''
     #     return buf
 
-    # int(* 	write )(const char *, const char *, size_t, off_t, struct fuse_file_info *)
-    def write(self, path):
-        logging.info("WRITE: " + path)
-        return 0
+    # # int(* 	write )(const char *, const char *, size_t, off_t, struct fuse_file_info *)
+    # def write(self, path):
+    #     logging.info("WRITE: " + path)
+    #     return 0
     
-    # int(* 	statfs )(const char *, struct statvfs *)
-    def statfs(self, path):
-        logging.info("STATFS: " + path)
-        return 0
+    # # int(* 	statfs )(const char *, struct statvfs *)
+    # def statfs(self, path):
+    #     logging.info("STATFS: " + path)
+    #     return 0
     
-    # int(* 	flush )(const char *, struct fuse_file_info *)
-    def flush(self, path):
-        logging.info("FLUSH: " + path)
-        return 0
+    # # int(* 	flush )(const char *, struct fuse_file_info *)
+    # def flush(self, path):
+    #     logging.info("FLUSH: " + path)
+    #     return 0
         
-    # int(* 	release )(const char *, struct fuse_file_info *)
-    def release(self, path):
-        logging.info("RELEASE: " + path)
-        return 0
+    # # int(* 	release )(const char *, struct fuse_file_info *)
+    # def release(self, path,file_info):
+    #     logging.info("RELEASE: " + path)
+    #     return 0
     
-    # int(* 	fsync )(const char *, int, struct fuse_file_info *)
-    def fsync(self, path):
-        logging.info("FSYNC: " + path)
-        return 0
+    # # int(* 	fsync )(const char *, int, struct fuse_file_info *)
+    # def fsync(self, path):
+    #     logging.info("FSYNC: " + path)
+    #     return 0
     
-    # int(* 	setxattr )(const char *, const char *, const char *, size_t, int)
-    def setxattr(self, path):
-        logging.info("SETXATTR: " + path)
-        return 0
+    # # int(* 	setxattr )(const char *, const char *, const char *, size_t, int)
+    # def setxattr(self, path):
+    #     logging.info("SETXATTR: " + path)
+    #     return 0
     
-    # int(* 	getxattr )(const char *, const char *, char *, size_t)
-    def getxattr(self, path):
-        logging.info("GETXATTR: " + path)
-        return 0
+    # # int(* 	getxattr )(const char *, const char *, char *, size_t)
+    # def getxattr(self, path,x,y):
+    #     logging.info("GETXATTR: " + path)
+    #     return 0
     
-    # int(* 	listxattr )(const char *, char *, size_t)
-    def listxattr(self, path):
-        logging.info("LISTXATTR: " + path)
-        return 0
+    # # int(* 	listxattr )(const char *, char *, size_t)
+    # def listxattr(self, path):
+    #     logging.info("LISTXATTR: " + path)
+    #     return 0
     
-    # int(* 	removexattr )(const char *, const char *)
-    def removexattr(self, path):
-        logging.info("REMOVEXATTR: " + path)
-        return 0
+    # # int(* 	removexattr )(const char *, const char *)
+    # def removexattr(self, path):
+    #     logging.info("REMOVEXATTR: " + path)
+    #     return 0
     
-    # int(* 	opendir )(const char *, struct fuse_file_info *)
-    def opendir(self, path):
-        logging.info("OPENDIR: " + path)
-        return 0
+    # # int(* 	opendir )(const char *, struct fuse_file_info *)
+    # def opendir(self, path):
+    #     logging.info("OPENDIR: " + path)
+    #     return 0
     
     # int(* 	readdir )(const char *, void *, fuse_fill_dir_t, off_t, struct fuse_file_info *, enum fuse_readdir_flags)
     def readdir(self, path, offset):
@@ -224,15 +223,15 @@ class OCFLFS(Fuse):
             for r in '.', '..':
                 yield fuse.Direntry(r)
                 
-    # int(* 	releasedir )(const char *, struct fuse_file_info *)
-    def releasedir(self, path):
-        logging.info("RELEASEDIR: " + path)
-        return 0
+    # # int(* 	releasedir )(const char *, struct fuse_file_info *)
+    # def releasedir(self, path):
+    #     logging.info("RELEASEDIR: " + path)
+    #     return 0
     
-    # int(* 	fsyncdir )(const char *, int, struct fuse_file_info *)
-    def fsyncdir(self, path):
-        logging.info("FSYNCDIR: " + path)
-        return 0
+    # # int(* 	fsyncdir )(const char *, int, struct fuse_file_info *)
+    # def fsyncdir(self, path):
+    #     logging.info("FSYNCDIR: " + path)
+    #     return 0
     
     # void *(* 	init )(struct fuse_conn_info *conn, struct fuse_config *cfg)
     # void(* 	destroy )(void *private_data)
@@ -249,56 +248,57 @@ class OCFLFS(Fuse):
         logging.info("CREATE: " + path)
         return 0
     
-    # int(* 	lock )(const char *, struct fuse_file_info *, int cmd, struct flock *)
-    def lock(self, path):
-        logging.info("LOCK: " + path)
-        return 0
+    # # int(* 	lock )(const char *, struct fuse_file_info *, int cmd, struct flock *)
+    # #    def lock(self, cmd,owner,**kw):
+    # def lock(self, path, cmd, owner, **kw):
+    #     logging.info("LOCK: " + path)
+    #     return 0
     
-    # int(* 	utimens )(const char *, const struct timespec tv[2], struct fuse_file_info *fi)
-    def utimens(self, path):
-        logging.info("UTIMENS: " + path)
-        return 0
+    # # int(* 	utimens )(const char *, const struct timespec tv[2], struct fuse_file_info *fi)
+    # def utimens(self, path):
+    #     logging.info("UTIMENS: " + path)
+    #     return 0
     
-    # int(* 	bmap )(const char *, size_t blocksize, uint64_t *idx)
-    def bmap(self, path):
-        logging.info("BMAP: " + path)
-        return 0
+    # # int(* 	bmap )(const char *, size_t blocksize, uint64_t *idx)
+    # def bmap(self, path):
+    #     logging.info("BMAP: " + path)
+    #     return 0
     
-    # int(* 	ioctl )(const char *, unsigned int cmd, void *arg, struct fuse_file_info *, unsigned int flags, void *data)
-    def ioctl(self, path, cmd, arg, flags):
-        logging.info("IOCTL: " + path)
-        return 0
+    # # int(* 	ioctl )(const char *, unsigned int cmd, void *arg, struct fuse_file_info *, unsigned int flags, void *data)
+    # def ioctl(self, path, cmd, arg, flags):
+    #     logging.info("IOCTL: " + path)
+    #     return 0
     
-    # int(* 	poll )(const char *, struct fuse_file_info *, struct fuse_pollhandle *ph, unsigned *reventsp)
-    def poll(self, path):
-        logging.info("POLL: " + path)
-        return 0
+    # # int(* 	poll )(const char *, struct fuse_file_info *, struct fuse_pollhandle *ph, unsigned *reventsp)
+    # def poll(self, path):
+    #     logging.info("POLL: " + path)
+    #     return 0
     
-    # int(* 	write_buf )(const char *, struct fuse_bufvec *buf, off_t off, struct fuse_file_info *)
-    def write_buf(self, path):
-        logging.info("WRITE_BUF: " + path)
-        return 0
+    # # int(* 	write_buf )(const char *, struct fuse_bufvec *buf, off_t off, struct fuse_file_info *)
+    # def write_buf(self, path):
+    #     logging.info("WRITE_BUF: " + path)
+    #     return 0
     
-    # int(* 	read_buf )(const char *, struct fuse_bufvec **bufp, size_t size, off_t off, struct fuse_file_info *)
-    def read_buf(self, path):
-        logging.info("READ_BUF: " + path)
-        return 0
+    # # int(* 	read_buf )(const char *, struct fuse_bufvec **bufp, size_t size, off_t off, struct fuse_file_info *)
+    # def read_buf(self, path):
+    #     logging.info("READ_BUF: " + path)
+    #     return 0
     
-    # int(* 	flock )(const char *, struct fuse_file_info *, int op)
-    def flock(self, path):
-        logging.info("FLOCK: " + path)
-        return 0
+    # # int(* 	flock )(const char *, struct fuse_file_info *, int op)
+    # def flock(self, path):
+    #     logging.info("FLOCK: " + path)
+    #     return 0
     
-    # int(* 	fallocate )(const char *, int, off_t, off_t, struct fuse_file_info *)
-    def fallocate(self, path):
-        logging.info("FALLOCATE: " + path)
-        return 0
+    # # int(* 	fallocate )(const char *, int, off_t, off_t, struct fuse_file_info *)
+    # def fallocate(self, path):
+    #     logging.info("FALLOCATE: " + path)
+    #     return 0
     
-    # ssize_t(* 	copy_file_range )(const char *path_in, struct fuse_file_info *fi_in, off_t offset_in, const char *path_out, struct fuse_file_info *fi_out, off_t offset_out, size_t size, int flags)
-    # off_t(* 	lseek )(const char *, off_t off, int whence, struct fuse_file_info *)
-    def lseek(self, path):
-        logging.info("LSEEK: " + path)
-        return 0    
+    # # ssize_t(* 	copy_file_range )(const char *path_in, struct fuse_file_info *fi_in, off_t offset_in, const char *path_out, struct fuse_file_info *fi_out, off_t offset_out, size_t size, int flags)
+    # # off_t(* 	lseek )(const char *, off_t off, int whence, struct fuse_file_info *)
+    # def lseek(self, path):
+    #     logging.info("LSEEK: " + path)
+    #     return 0    
 
 def main():
     usage="""
