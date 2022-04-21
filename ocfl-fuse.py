@@ -319,7 +319,7 @@ Userspace ocfl client
         server.ocfl_root=server.cmdline[1][0];
     try:
         # server.store=Store(server.ocfl_root)
-        server.ocflpy = OCFLPY(server.ocfl_root,server.staging_directory)
+        server.ocflpy = OCFLPY(server.ocfl_root,server.staging_directory,'pairtree')
         # server.store.validate()
     except AttributeError as e:
         print("No OCFL root or staging directory given")

@@ -2,6 +2,7 @@ import os
 from ocfl import Store
 import re
 import shutil
+from ocfl.dispositor import Dispositor
 
 class OCFLException(Exception):
     def __init__(self,msg):
@@ -9,15 +10,19 @@ class OCFLException(Exception):
         
 class OCFLPY():
 
-    def __normalize_id(self,id):
-        # Replace all non-word characters except . by _
-        return re.sub("[^\w.]","_",id)
+    # Quote special characters
+    def encode_id(self,id):
+        return self.dispositor.encode(id)
+
+    # Quote special characters
+    def decode_id(self,id):
+        return self.dispositor.decode(id)
     
-    def __init__(self,root,staging_dir):
+    def __init__(self,root,staging_dir,disposition):
         # The store root
         self.root = root
         # Load the store
-        self.store = Store(root)
+        self.store = Store(root,disposition=disposition)
         # The staging dir
         self.staging_dir = staging_dir
         # create if missing
@@ -25,6 +30,8 @@ class OCFLPY():
                os.mkdir(staging_dir)
         # Dictionary to keep track of staging objects
         self.staging_objects = {}
+        # Local dispositor to access the methods
+        self.dispositor=Dispositor()
 
     # Returns the list of all object ids
     def list_object_ids(self):
@@ -43,7 +50,7 @@ class OCFLPY():
     # Creates a new object, i.e. a new folder in staging
     def new_object(self,id):
         # Get a normalized id, i.e. without problematic special characters
-        normalized_id = __normalize_id(id)
+        normalized_id = self.encode_id(id)
         # Check if object already exists, either in store ...
         if id in list_objects():
                raise OCFLException("Object already exists in store")
@@ -61,7 +68,7 @@ class OCFLPY():
         if not(id in self.list_object_ids()):
             raise OCFLException("Object not in store " + id)
         # Get a normalized id, i.e. without problematic special characters
-        normalized_id = self.__normalize_id(id)
+        normalized_id = self.encode_id(id)
         # Check if object is already in staging
         staging_object = os.path.join(self.staging_dir,normalized_id)
         if not(id in self.staging_objects.keys()) and os.path.exists(staging_object):
