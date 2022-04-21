@@ -52,18 +52,28 @@ class OCFLFS(Fuse):
     def getattr(self, path):
         logging.info("GETATTR: " + path)
         st = MyStat()
+        # Split the path
+        split_path=os.path.split(path)
         # Root of our OCFL store
         if path == '/':
             st.st_mode = stat.S_IFDIR | 0o755
             st.st_nlink = 2
         # The object path
-        elif path == object_path:
+        elif path == self.object_path:
             st.st_mode = stat.S_IFDIR | 0o755
             st.st_nlink = 2
-        elif path in self.folders:
+        # Files in the current object
+        elif path in self.current_object_files:
+            st.st_mode = stat.S_IFREG | 0o755
+            st.st_nlink = 1
+            st.st_size = 42
+            st.st_mtime=1648052817
+        elif path in self.current_object_dirs:
             st.st_mode = stat.S_IFDIR | 0o755
             st.st_nlink = 2
-        elif path.startswith(object_path):
+        # Folders in the current object
+        # Path containing all objects
+        elif split_path[0] == self.object_path:
             st.st_mode = stat.S_IFDIR | 0o755
             st.st_nlink = 2
         # elif path.endswith(hello_path):
@@ -72,7 +82,7 @@ class OCFLFS(Fuse):
         #     st.st_size = len(hello_str)
         #     st.st_mtime=1648052817
         else:
-             return -errno.ENOENT
+            return -errno.ENOENT
         return st
 
     # # int(* 	readlink )(const char *, char *, size_t)
