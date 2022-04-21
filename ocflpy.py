@@ -2,6 +2,7 @@ import os
 from ocfl import Store
 import re
 import shutil
+import json
 from ocfl.dispositor import Dispositor
 
 # Custom exception for OCFL-related problems
@@ -84,6 +85,22 @@ class OCFLPY():
             # Add to list of staged objects
             self.staging_objects[id] = normalized_id
 
+    # Get the path for an object id
+    def get_object_path(self,id):
+        return os.path.join(self.root,self.store.object_path(id));
+
+    # Get the inventory for an object id
+    def get_object_inventory(self,id):
+        return json.load(open(os.path.join(self.get_object_path(id),"inventory.json"),"r"))
+
+    # List the files in the most recent version of an object given by its id
+    def list_object_files(self,id):
+        inventory=self.get_object_inventory(id)
+        version_state=inventory['versions'][inventory['head']]['state']
+        file_list=[]
+        for hash in version_state.keys():
+            file_list=file_list+version_state[hash]
+        return file_list
     # Commit an object creating a new version
     def commit_object(self,id):
         return 0
