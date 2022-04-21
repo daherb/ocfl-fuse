@@ -154,7 +154,7 @@ class OCFLFS(Fuse):
     # int(* 	read )(const char *, char *, size_t, off_t, struct fuse_file_info *)
     def read(self, path, size, offset):
         logging.info("READ: " + path)
-        if path == object_path:
+        if path == self.object_path:
             return 0
         else:
             return -errno.ENOENT
