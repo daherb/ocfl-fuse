@@ -295,8 +295,11 @@ class OCFLFS(Fuse):
         return 0
     
     # int(* 	create )(const char *, mode_t, struct fuse_file_info *)
-    def create(self, path):
-        logging.info("CREATE: " + path)
+    def create(self, path, mode ,file_info):
+        logging.info("CREATE: " + path + " - Mode: " + str(mode) + " - File Info: " + str(file_info))
+        if path.endswith("/commit"):
+            object_id=path.replace("/commit","").replace(self.object_path,"")
+            self.ocflpy.commit_object(object_id)
         return 0
     
     # # int(* 	lock )(const char *, struct fuse_file_info *, int cmd, struct flock *)
