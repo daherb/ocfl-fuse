@@ -78,10 +78,24 @@ class OCFLPY():
                raise OCFLException("Object folder already exists in staging")
         else:
             # Create folder
-            os.mkdir(staging_object)
+            if not os.path.exists(staging_object):
+                os.mkdir(staging_object)
             # Copy files
-            object_path=self.store.object_path(id);
-            shutil.copytree(object_path,staging_object)
+            object_path=self.get_object_path(id)
+            object_inventory=self.get_object_inventory(id)
+            #object_head_content=os.path.join(os.path.join(object_path,object_inventory['head']),"content")
+            #print("Copytree from " + object_head_content + " to " + staging_object)
+            #shutil.copytree(object_head_content,staging_object)
+            current_version=object_inventory['head']
+            for hash in object_inventory['versions'][current_version]['state']:
+                src_file = os.path.join(object_path,object_inventory['manifest'][hash][0])
+                tgt_file = os.path.join(staging_object,object_inventory['versions'][current_version]['state'][hash][0])
+                # Split target into path and file name
+                split_tgt = os.path.split(tgt_file)
+                # If the path doesn't exist create it
+                if not os.path.exists(split_tgt[0]):
+                    os.mkdir(split_tgt[0])
+                shutil.copy(src_file,tgt_file)
             # Add to list of staged objects
             self.staging_objects[id] = normalized_id
 
