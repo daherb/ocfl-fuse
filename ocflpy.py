@@ -4,10 +4,12 @@ import re
 import shutil
 from ocfl.dispositor import Dispositor
 
+# Custom exception for OCFL-related problems
 class OCFLException(Exception):
     def __init__(self,msg):
         super().__init__(msg)
-        
+
+# Wrapper class around the ocfl reference implementation to add basic transactions
 class OCFLPY():
 
     # Quote special characters
@@ -17,7 +19,7 @@ class OCFLPY():
     # Quote special characters
     def decode_id(self,id):
         return self.dispositor.decode(id)
-    
+
     def __init__(self,root,staging_dir,disposition):
         # The store root
         self.root = root
@@ -28,7 +30,7 @@ class OCFLPY():
         # create if missing
         if not(os.path.exists(staging_dir)):
                os.mkdir(staging_dir)
-        # Dictionary to keep track of staging objects
+        # Keep track of staging objects
         self.staging_objects = {}
         # Local dispositor to access the methods
         self.dispositor=Dispositor()
@@ -46,7 +48,7 @@ class OCFLPY():
     # Returns the path of the staging version of an object
     def get_staging_object_path(self,id):
         return os.path.join(self.staging_dir,self.staging_objects[id])
-    
+
     # Creates a new object, i.e. a new folder in staging
     def new_object(self,id):
         # Get a normalized id, i.e. without problematic special characters
@@ -81,8 +83,8 @@ class OCFLPY():
             shutil.copytree(object_path,staging_object)
             # Add to list of staged objects
             self.staging_objects[id] = normalized_id
-        
-    # Commit an object creating a new cersion
+
+    # Commit an object creating a new version
     def commit_object(self,id):
         return 0
     
