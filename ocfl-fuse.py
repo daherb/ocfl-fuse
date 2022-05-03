@@ -147,7 +147,14 @@ class OCFLFS(Fuse):
     # int(* 	open )(const char *, struct fuse_file_info *)
     def open(self, path, flags):
         logging.info("OPEN: " + path)
-        if path == object_path:
+        # Object path or 
+        # One of the objects or
+        # One of the folders in the current objects or
+        # One of the files in the current object
+        if path == self.object_path or \
+            os.path.split(path)[0] == self.object_path or \
+            path in self.current_object_dirs or \
+            path in self.current_object_files:
             return 0
         # if not(path.endswith(hello_path)):
         #     return -errno.ENOENT
