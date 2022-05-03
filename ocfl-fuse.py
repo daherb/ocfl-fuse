@@ -62,20 +62,20 @@ class OCFLFS(Fuse):
         elif path == self.object_path:
             st.st_mode = stat.S_IFDIR | 0o755
             st.st_nlink = 2
+        # Path containing all objects
+        elif split_path[0] == self.object_path:
+            st.st_mode = stat.S_IFDIR | 0o755
+            st.st_nlink = 2
+        # Folders in the current object
+        elif path in self.current_object_dirs:
+            st.st_mode = stat.S_IFDIR | 0o755
+            st.st_nlink = 2
         # Files in the current object
         elif path in self.current_object_files:
             st.st_mode = stat.S_IFREG | 0o755
             st.st_nlink = 1
             st.st_size = 42
             st.st_mtime=1648052817
-        elif path in self.current_object_dirs:
-            st.st_mode = stat.S_IFDIR | 0o755
-            st.st_nlink = 2
-        # Folders in the current object
-        # Path containing all objects
-        elif split_path[0] == self.object_path:
-            st.st_mode = stat.S_IFDIR | 0o755
-            st.st_nlink = 2
         # elif path.endswith(hello_path):
         #     st.st_mode = stat.S_IFREG | 0o444
         #     st.st_nlink = 1
@@ -85,6 +85,10 @@ class OCFLFS(Fuse):
             return -errno.ENOENT
         return st
 
+    def setattr(self,path):
+        logging.info("SETATTR: " + path)
+        return 0
+    
     # # int(* 	readlink )(const char *, char *, size_t)
     # def readlink(self, path):
     #     logging.info("READLINK: " + path)
