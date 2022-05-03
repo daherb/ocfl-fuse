@@ -157,11 +157,19 @@ class OCFLFS(Fuse):
 
     # int(* 	read )(const char *, char *, size_t, off_t, struct fuse_file_info *)
     def read(self, path, size, offset):
-        logging.info("READ: " + path)
-        if path == self.object_path:
-            return 0
-        else:
-            return -errno.ENOENT
+        logging.info("READ: " + path + " SIZE: " + str(size) + " OFFSET: " + str(offset))
+        # Read one of the project files
+        if path in self.current_object_files:
+            # Get the path of file in staging and read it
+            oid = self.current_object_id
+            file_path=path.replace(os.path.join(self.object_path,self.ocflpy.encode_id(oid)) + "/","")
+            object_file_path=os.path.join(self.ocflpy.get_staging_object_path(oid),file_path)
+            f = open(object_file_path, 'rb')
+            f.seek(offset)
+            data = f.read(size)
+            f.close()
+            return data
+        return -errno.ENOENT
     #     if not(path.endswith(hello_path)):
     #         return -errno.ENOENT
     #     slen = len(hello_str)
