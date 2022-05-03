@@ -317,8 +317,12 @@ class OCFLFS(Fuse):
     def create(self, path, mode ,file_info):
         logging.info("CREATE: " + path + " - Mode: " + str(mode) + " - File Info: " + str(file_info))
         if path.endswith("/commit"):
-            object_id=path.replace("/commit","").replace(self.object_path,"")
+            object_id=self.current_object_id
             self.ocflpy.commit_object(object_id)
+        else:
+            if self.current_object_id != "":
+                logging.info("ADDING " + path)
+                self.current_object_files.append(path)
         return 0
     
     # # int(* 	lock )(const char *, struct fuse_file_info *, int cmd, struct flock *)
