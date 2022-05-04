@@ -136,10 +136,14 @@ class OCFLFS(Fuse):
         logging.info("CHOWN: " + path)
         return 0
     
-    # # int(* 	truncate )(const char *, off_t, struct fuse_file_info *fi)
-    # def truncate(self, path, length):
-    #     logging.info("TRUNCATE: " + path)
-    #     return 0
+    # int(* 	truncate )(const char *, off_t, struct fuse_file_info *fi)
+    def truncate(self, path, length):
+        logging.info("TRUNCATE: " + path)
+        object_file_path=self.get_object_file_path(path)
+        f = open(object_file_path,'wb')
+        f.truncate(length)
+        f.close()
+        return 0
     
     # int(* 	open )(const char *, struct fuse_file_info *)
     def open(self, path, flags):
