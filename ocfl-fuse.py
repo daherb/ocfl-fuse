@@ -202,15 +202,15 @@ class OCFLFS(Fuse):
     #     logging.info("STATFS: " + path)
     #     return 0
     
-    # # int(* 	flush )(const char *, struct fuse_file_info *)
-    # def flush(self, path):
-    #     logging.info("FLUSH: " + path)
-    #     return 0
+    # int(* 	flush )(const char *, struct fuse_file_info *)
+    def flush(self, path):
+        logging.info("FLUSH: " + path)
+        return 0
         
-    # # int(* 	release )(const char *, struct fuse_file_info *)
-    # def release(self, path,file_info):
-    #     logging.info("RELEASE: " + path)
-    #     return 0
+    # int(* 	release )(const char *, struct fuse_file_info *)
+    def release(self, path,file_info):
+        logging.info("RELEASE: " + path)
+        return 0
     
     # # int(* 	fsync )(const char *, int, struct fuse_file_info *)
     # def fsync(self, path):
