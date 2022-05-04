@@ -412,6 +412,18 @@ class OCFLFS(Fuse):
         file_path=path.replace(os.path.join(self.object_path,self.ocflpy.encode_id(oid)) + "/","")
         return os.path.join(self.ocflpy.get_staging_object_path(oid),file_path)
     
+    # Checks if a path is to a staged file/directory
+    def is_staged_object_path(self,path):
+        oid=self.current_object_id
+        return path.startswith(os.path.join(self.object_path,self.ocflpy.encode_id(oid)))
+
+    # Check if a path is a staged file
+    def is_staged_object_file(self,path):
+        return self.is_staged_object_path and os.path.isfile(self.get_staged_object_path(path))
+
+    # Check if a path is a staged directory
+    def is_staged_object_dir(self,path):
+        return self.is_staged_object_path and os.path.isdir(self.get_staged_object_path(path))
 def main():
     usage="""
 Userspace ocfl client
