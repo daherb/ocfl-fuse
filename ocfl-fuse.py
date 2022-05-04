@@ -12,6 +12,7 @@ import fuse
 from fuse import Fuse
 # from ocfl.store import Store
 from ocflpy import OCFLPY
+import shutil
 import logging
 
 if not hasattr(fuse, '__version__'):
@@ -399,6 +400,9 @@ Userspace ocfl client
     server.parser.add_option(mountopt="staging_directory", metavar="PATH",
                              help="use PATH as staging directory")
     server.parse(values=server,errex=1)
+    # Create staging directory if missing
+    if not os.path.exists(server.staging_directory):
+        os.mkdir(server.staging_directory)
     # Check if we already got the ocfl root or use one additional parameter
     if len(server.cmdline[1]) == 1 and not hasattr(server, "ocfl_root"):
         server.ocfl_root=server.cmdline[1][0];
@@ -410,6 +414,8 @@ Userspace ocfl client
         print("No OCFL root or staging directory given")
         exit(-1)
     server.main()
+    # Cleanup staging directory
+    shutil.rmtree(server.staging_directory)
 
 if __name__ == '__main__':
     main()
