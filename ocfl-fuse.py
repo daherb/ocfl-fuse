@@ -10,7 +10,6 @@
 import os, stat, errno
 import fuse
 from fuse import Fuse
-# from ocfl.store import Store
 from ocflpy import OCFLPY
 import shutil
 import logging
@@ -76,11 +75,6 @@ class OCFLFS(Fuse):
             st.st_nlink = 1
             st.st_size = 0
             st.st_mtime=0
-        # elif path.endswith(hello_path):
-        #     st.st_mode = stat.S_IFREG | 0o444
-        #     st.st_nlink = 1
-        #     st.st_size = len(hello_str)
-        #     st.st_mtime=1648052817
         else:
             return -errno.ENOENT
         return st
@@ -156,8 +150,6 @@ class OCFLFS(Fuse):
             self.is_staged_object_file(path) or \
             self.is_staged_object_dir(path):
             return 0
-        # if not(path.endswith(hello_path)):
-        #     return -errno.ENOENT
         accmode = os.O_RDONLY | os.O_WRONLY | os.O_RDWR
         if (flags & accmode) != os.O_RDONLY:
             return -errno.EACCES
@@ -174,17 +166,7 @@ class OCFLFS(Fuse):
             f.close()
             return data
         return -errno.ENOENT
-    #     if not(path.endswith(hello_path)):
-    #         return -errno.ENOENT
-    #     slen = len(hello_str)
-    #     if offset < slen:
-    #         if offset + size > slen:
-    #             size = slen - offset
-    #         buf = hello_str[offset:offset+size]
-    #     else:
-    #         buf = b''
-    #     return buf
-
+    
     # int(* 	write )(const char *, const char *, size_t, off_t, struct fuse_file_info *)
     def write(self, path, data, offset): # length):
         logging.info("WRITE: " + path)
@@ -193,12 +175,6 @@ class OCFLFS(Fuse):
         # f.seek(offset)
         len = f.write(data)
         f.close()
-        # if path in self.current_object_files:
-        #     # Get the path of file in staging and read it
-        #     oid = self.current_object_id
-        #     file_path=path.replace(os.path.join(self.object_path,self.ocflpy.encode_id(oid)) + "/","")
-        #     object_file_path=os.path.join(self.ocflpy.get_staging_object_path(oid),file_path)
-        #     f = open(object_file_path, 'rb')
         return len
     
     # # int(* 	statfs )(const char *, struct statvfs *)
