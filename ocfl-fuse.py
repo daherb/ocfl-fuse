@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
+#    Based on hello world example by:
 #    Copyright (C) 2006  Andrew Straw  <strawman@astraw.com>
-#    Copyright (C) 2022  Herbert Lange <lange@ids-mannheim.de>
 #
-#    This program can be distributed under the terms of the GNU LGPL.
-#    See the file COPYING.
+#    Almost completely rewritten by:
+#    Copyright (C) 2022  Herbert Lange <lange@ids-mannheim.de>
 #
 
 import os, stat, errno
