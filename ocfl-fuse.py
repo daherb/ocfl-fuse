@@ -138,7 +138,7 @@ class OCFLFS(Fuse):
     # int(* 	truncate )(const char *, off_t, struct fuse_file_info *fi)
     def truncate(self, path, length):
         logging.info("TRUNCATE: " + path)
-        object_file_path=self.get_object_file_path(path)
+        object_file_path=self.get_staged_object_path(path)
         f = open(object_file_path,'wb')
         f.truncate(length)
         f.close()
@@ -188,7 +188,7 @@ class OCFLFS(Fuse):
     # int(* 	write )(const char *, const char *, size_t, off_t, struct fuse_file_info *)
     def write(self, path, data, offset): # length):
         logging.info("WRITE: " + path)
-        object_file_path=self.get_object_file_path(path)
+        object_file_path=self.get_staged_object_path(path)
         f = open(object_file_path, 'wb')
         # f.seek(offset)
         len = f.write(data)
@@ -339,7 +339,7 @@ class OCFLFS(Fuse):
             if self.current_object_id != "":
                 logging.info("ADDING " + path)
                 # Check if file exists and otherwise create it
-                object_file_path=self.get_object_file_path(path)
+                object_file_path=self.get_staged_object_path(path)
                 if not os.path.exists(object_file_path):
                     open(object_file_path,'wb').close()
         return 0
@@ -397,7 +397,7 @@ class OCFLFS(Fuse):
     #     return 0    
 
     # Gets the staging file name for an object file
-    def get_object_file_path(self,path):
+    def get_staged_object_path(self,path):
         # Get the path of file in staging and read it
         oid=self.current_object_id
         file_path=path.replace(os.path.join(self.object_path,self.ocflpy.encode_id(oid)) + "/","")
