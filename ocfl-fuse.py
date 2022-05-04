@@ -255,52 +255,28 @@ class OCFLFS(Fuse):
         if path == '/':
             for r in  [self.object_path[1:]]:
                 yield fuse.Direntry(r)
-        # The object path
+        # The object list
         elif path == self.object_path:
             for oid in self.ocflpy.list_object_ids():
                 normalized_id=self.ocflpy.encode_id(oid)
                 yield fuse.Direntry(normalized_id)
-        # A folder somewhere deeper in the object
-        elif path in self.current_object_dirs:
-            for file in self.ocflpy.list_object_files(self.current_object_id):
-                object_id = self.ocflpy.encode_id(self.current_object_id)
-                object_folder=path.replace(os.path.join(self.object_path,object_id)+ "/","")
-                if file.startswith(object_folder):
-                    stripped_file = file.replace(object_folder+"/","")
-                    if "/" in stripped_file:
-                        # Handle next level of folders
-                        path_split=stripped_file.split("/")
-                        self.current_object_dirs.append(os.path.join(path,path_split[0]))
-                        yield fuse.Direntry(path_split[0])
-                    else:
-                        # Plain file
-                        self.current_object_files.append(os.path.join(path,stripped_file))
-                        yield fuse.Direntry(stripped_file)
-        split_path=os.path.split(path)
-        # Files in one of the objects
-        if split_path[0] == self.object_path:
+        # Listing the content of an unstaged object
+        elif path.startswith(self.object_path) and self.current_object_id == "":
+            split_path=os.path.split(path)
             # get object id
             object_id=split_path[1]
             self.current_object_id=self.ocflpy.decode_id(object_id)
-            # Check if we already have the file list in memory
-            if self.current_object_files != [] and self.current_object_dirs != []:
-                for file in self.current_object_files + self.current_object_dirs:
-                    file_name=file.replace(os.path.join(self.object_path,object_id) + "/","")
-                    # TODO should we handle slashes?
-                    yield fuse.Direntry(file_name)
-            # otherwise read from the store
-            else:
-                # get file list for id
-                for file in self.ocflpy.list_object_files(self.current_object_id):
-                    if "/" in file:
-                        # Handle first level of folders
-                        path_split=file.split("/")
-                        self.current_object_dirs.append(os.path.join(path,path_split[0]))
-                        yield fuse.Direntry(path_split[0])
-                    else:
-                        # Plain file
-                        self.current_object_files.append(os.path.join(path,file))
-                        yield fuse.Direntry(file)
+            for file in os.listdir(self.ocflpy.get_staging_object_path(self.current_object_id)):
+                yield fuse.Direntry(file)
+        # Listing the content of a staged object
+        elif path == os.path.join(self.object_path,self.ocflpy.encode_id(self.current_object_id)):
+            for file in os.listdir(self.ocflpy.get_staging_object_path(self.current_object_id)):
+                yield fuse.Direntry(file)
+        else:
+            # self.is_staged_object_dir(path):
+            logging.info("HERE2: " + path)
+            for file in os.listdir(self.get_staged_object_path(path)):
+                yield fuse.Direntry(file)
                 
     # # int(* 	releasedir )(const char *, struct fuse_file_info *)
     # def releasedir(self, path):
