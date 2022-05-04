@@ -70,6 +70,7 @@ class OCFLFS(Fuse):
             st.st_nlink = 1
             st.st_size = 42
             st.st_mtime=1648052817
+        # Virtual file for commit
         elif path.endswith("commit"):
             st.st_mode = stat.S_IFREG | 0o755
             st.st_nlink = 1
@@ -348,6 +349,8 @@ class OCFLFS(Fuse):
     #     logging.info("LSEEK: " + path)
     #     return 0    
 
+    # Helper functions
+
     # Gets the staging file name for an object file
     def get_staged_object_path(self,path):
         # Get the path of file in staging and read it
@@ -367,6 +370,7 @@ class OCFLFS(Fuse):
     # Check if a path is a staged directory
     def is_staged_object_dir(self,path):
         return self.is_staged_object_path and os.path.isdir(self.get_staged_object_path(path))
+
 def main():
     usage="""
 Userspace ocfl client
