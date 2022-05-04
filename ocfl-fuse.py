@@ -283,17 +283,25 @@ class OCFLFS(Fuse):
             # get object id
             object_id=split_path[1]
             self.current_object_id=self.ocflpy.decode_id(object_id)
-            # get file list for id
-            for file in self.ocflpy.list_object_files(self.current_object_id):
-                if "/" in file:
-                    # Handle first level of folders
-                    path_split=file.split("/")
-                    self.current_object_dirs.append(os.path.join(path,path_split[0]))
-                    yield fuse.Direntry(path_split[0])
-                else:
-                    # Plain file
-                    self.current_object_files.append(os.path.join(path,file))
-                    yield fuse.Direntry(file)
+            # Check if we already have the file list in memory
+            if self.current_object_files != [] and self.current_object_dirs != []:
+                for file in self.current_object_files + self.current_object_dirs:
+                    file_name=file.replace(os.path.join(self.object_path,object_id) + "/","")
+                    # TODO should we handle slashes?
+                    yield fuse.Direntry(file_name)
+            # otherwise read from the store
+            else:
+                # get file list for id
+                for file in self.ocflpy.list_object_files(self.current_object_id):
+                    if "/" in file:
+                        # Handle first level of folders
+                        path_split=file.split("/")
+                        self.current_object_dirs.append(os.path.join(path,path_split[0]))
+                        yield fuse.Direntry(path_split[0])
+                    else:
+                        # Plain file
+                        self.current_object_files.append(os.path.join(path,file))
+                        yield fuse.Direntry(file)
                 
     # # int(* 	releasedir )(const char *, struct fuse_file_info *)
     # def releasedir(self, path):
