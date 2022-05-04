@@ -187,15 +187,20 @@ class OCFLFS(Fuse):
     #     return buf
 
     # int(* 	write )(const char *, const char *, size_t, off_t, struct fuse_file_info *)
-    def write(self, path):
+    def write(self, path, data, offset): # length):
         logging.info("WRITE: " + path)
+        object_file_path=self.get_object_file_path(path)
+        f = open(object_file_path, 'wb')
+        # f.seek(offset)
+        len = f.write(data)
+        f.close()
         # if path in self.current_object_files:
         #     # Get the path of file in staging and read it
         #     oid = self.current_object_id
         #     file_path=path.replace(os.path.join(self.object_path,self.ocflpy.encode_id(oid)) + "/","")
         #     object_file_path=os.path.join(self.ocflpy.get_staging_object_path(oid),file_path)
         #     f = open(object_file_path, 'rb')
-        return 0
+        return len
     
     # # int(* 	statfs )(const char *, struct statvfs *)
     # def statfs(self, path):
