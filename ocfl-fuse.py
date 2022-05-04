@@ -42,12 +42,6 @@ class OCFLFS(Fuse):
         self.object_path = "/objects"
         # Keep track of the current project id
         self.current_object_id = ""
-        # Keep track of the files in the current object
-        self.current_object_files=[]
-        # Keep track of the directories in the current object
-        self.current_object_dirs=[]
-        # Mapping normalized object ids back to the original ones
-        # self.id_map={}
 
     # int(* 	getattr )(const char *, struct stat *, struct fuse_file_info *fi)
     def getattr(self, path):
@@ -68,11 +62,11 @@ class OCFLFS(Fuse):
             st.st_mode = stat.S_IFDIR | 0o755
             st.st_nlink = 2
         # Folders in the current object
-        elif path in self.current_object_dirs:
+        elif self.is_staged_object_dir(path):
             st.st_mode = stat.S_IFDIR | 0o755
             st.st_nlink = 2
         # Files in the current object
-        elif path in self.current_object_files:
+        elif self.is_staged_object_file(path):
             st.st_mode = stat.S_IFREG | 0o755
             st.st_nlink = 1
             st.st_size = 42
@@ -159,8 +153,8 @@ class OCFLFS(Fuse):
         # One of the files in the current object
         if path == self.object_path or \
             os.path.split(path)[0] == self.object_path or \
-            path in self.current_object_dirs or \
-            path in self.current_object_files:
+            self.is_staged_object_file(path) or \
+            self.is_staged_object_dir(path):
             return 0
         # if not(path.endswith(hello_path)):
         #     return -errno.ENOENT
@@ -172,8 +166,8 @@ class OCFLFS(Fuse):
     def read(self, path, size, offset):
         logging.info("READ: " + path + " SIZE: " + str(size) + " OFFSET: " + str(offset))
         # Read one of the project files
-        if path in self.current_object_files:
-            object_file_path=self.get_object_file_path(path)
+        if self.is_staged_object_file(path):
+            object_file_path=self.get_staged_object_path(path)
             f = open(object_file_path, 'rb')
             f.seek(offset)
             data = f.read(size)
@@ -328,8 +322,6 @@ class OCFLFS(Fuse):
             if self.current_object_id != "":
                 self.ocflpy.revert_object(self.current_object_id)
                 self.current_object_id = ""
-                self.current_object_files=[]
-                self.current_object_dirs=[]
         split_path=os.path.split(path)
         if split_path[0] == self.object_path and split_path[1] != "":
             object_id=split_path[1]
@@ -350,7 +342,6 @@ class OCFLFS(Fuse):
                 object_file_path=self.get_object_file_path(path)
                 if not os.path.exists(object_file_path):
                     open(object_file_path,'wb').close()
-                self.current_object_files.append(path)
         return 0
     
     # # int(* 	lock )(const char *, struct fuse_file_info *, int cmd, struct flock *)
