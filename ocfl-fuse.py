@@ -312,6 +312,8 @@ class OCFLFS(Fuse):
             if self.current_object_id != "":
                 self.ocflpy.revert_object(self.current_object_id)
                 self.current_object_id = ""
+                self.current_object_files=[]
+                self.current_object_dirs=[]
         split_path=os.path.split(path)
         if split_path[0] == self.object_path and split_path[1] != "":
             object_id=split_path[1]
