@@ -77,6 +77,11 @@ class OCFLFS(Fuse):
             st.st_nlink = 1
             st.st_size = 42
             st.st_mtime=1648052817
+        elif path.endswith("commit"):
+            st.st_mode = stat.S_IFREG | 0o755
+            st.st_nlink = 1
+            st.st_size = 0
+            st.st_mtime=0
         # elif path.endswith(hello_path):
         #     st.st_mode = stat.S_IFREG | 0o444
         #     st.st_nlink = 1
