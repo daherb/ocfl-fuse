@@ -333,6 +333,10 @@ class OCFLFS(Fuse):
         else:
             if self.current_object_id != "":
                 logging.info("ADDING " + path)
+                # Check if file exists and otherwise create it
+                object_file_path=self.get_object_file_path(path)
+                if not os.path.exists(object_file_path):
+                    open(object_file_path,'wb').close()
                 self.current_object_files.append(path)
         return 0
     
