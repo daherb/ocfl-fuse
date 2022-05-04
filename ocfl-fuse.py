@@ -382,6 +382,13 @@ class OCFLFS(Fuse):
     #     logging.info("LSEEK: " + path)
     #     return 0    
 
+    # Gets the staging file name for an object file
+    def get_object_file_path(self,path):
+        # Get the path of file in staging and read it
+        oid=self.current_object_id
+        file_path=path.replace(os.path.join(self.object_path,self.ocflpy.encode_id(oid)) + "/","")
+        return os.path.join(self.ocflpy.get_staging_object_path(oid),file_path)
+    
 def main():
     usage="""
 Userspace ocfl client
