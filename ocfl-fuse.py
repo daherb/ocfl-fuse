@@ -85,10 +85,6 @@ class OCFLFS(Fuse):
         else:
             return -errno.ENOENT
         return st
-
-    def setattr(self,path):
-        logging.info("SETATTR: " + path)
-        return 0
     
     # # int(* 	readlink )(const char *, char *, size_t)
     # def readlink(self, path):
@@ -130,15 +126,15 @@ class OCFLFS(Fuse):
     #     logging.info("LINK: " + path)
     #     return 0
     
-    # # int(* 	chmod )(const char *, mode_t, struct fuse_file_info *fi)
-    # def chmod(self, path, mode):
-    #     logging.info("CHMOD: " + path)
-    #     return 0
+    # int(* 	chmod )(const char *, mode_t, struct fuse_file_info *fi)
+    def chmod(self, path, mode):
+        logging.info("CHMOD: " + path)
+        return 0
     
-    # # int(* 	chown )(const char *, uid_t, gid_t, struct fuse_file_info *fi)
-    # def chown(self, path, user, group):
-    #     logging.info("CHOWN: " + path)
-    #     return 0
+    # int(* 	chown )(const char *, uid_t, gid_t, struct fuse_file_info *fi)
+    def chown(self, path, user, group):
+        logging.info("CHOWN: " + path)
+        return 0
     
     # # int(* 	truncate )(const char *, off_t, struct fuse_file_info *fi)
     # def truncate(self, path, length):
@@ -340,10 +336,10 @@ class OCFLFS(Fuse):
     #     logging.info("LOCK: " + path)
     #     return 0
     
-    # # int(* 	utimens )(const char *, const struct timespec tv[2], struct fuse_file_info *fi)
-    # def utimens(self, path):
-    #     logging.info("UTIMENS: " + path)
-    #     return 0
+    # int(* 	utimens )(const char *, const struct timespec tv[2], struct fuse_file_info *fi)
+    def utimens(self, path,timespec,file_info):
+        logging.info("UTIMENS: " + path)
+        return 0
     
     # # int(* 	bmap )(const char *, size_t blocksize, uint64_t *idx)
     # def bmap(self, path):
