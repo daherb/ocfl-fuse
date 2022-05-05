@@ -67,6 +67,8 @@ class OCFLFS(Fuse):
         elif self.is_staged_object_dir(path):
             st.st_mode = stat.S_IFDIR | 0o755
             st.st_nlink = 2
+            st.st_size = os.path.getsize(self.get_staged_object_path(path))
+            st.st_mtime= os.path.getmtime(self.get_staged_object_path(path))
         # Files in the current object
         elif self.is_staged_object_file(path):
             st.st_mode = stat.S_IFREG | 0o755
