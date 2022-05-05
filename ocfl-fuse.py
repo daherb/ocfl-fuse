@@ -279,11 +279,6 @@ class OCFLFS(Fuse):
             yield fuse.Direntry("commit")
             for file in os.listdir(self.ocflpy.get_staging_object_path(self.current_object_id)):
                 yield fuse.Direntry(file)
-        else:
-            # self.is_staged_object_dir(path):
-            logging.info("HERE2: " + path)
-            for file in os.listdir(self.get_staged_object_path(path)):
-                yield fuse.Direntry(file)
                 
     # # int(* 	releasedir )(const char *, struct fuse_file_info *)
     # def releasedir(self, path):
