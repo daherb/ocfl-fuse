@@ -269,10 +269,14 @@ class OCFLFS(Fuse):
             # get object id
             object_id=split_path[1]
             self.current_object_id=self.ocflpy.decode_id(object_id)
+            # Virtual file to trigger commit
+            yield fuse.Direntry("commit")
             for file in os.listdir(self.ocflpy.get_staging_object_path(self.current_object_id)):
                 yield fuse.Direntry(file)
         # Listing the content of a staged object
         elif path == os.path.join(self.object_path,self.ocflpy.encode_id(self.current_object_id)):
+            # Virtual file to trigger commit
+            yield fuse.Direntry("commit")
             for file in os.listdir(self.ocflpy.get_staging_object_path(self.current_object_id)):
                 yield fuse.Direntry(file)
         else:
