@@ -1,3 +1,8 @@
+#    Copyright (C) 2022  Herbert Lange <lange@ids-mannheim.de>
+#
+# Wrapper module to implement basic transcations for an OCFL store
+#
+
 import os
 from ocfl import Store
 from ocfl import Object
