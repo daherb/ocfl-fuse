@@ -1,9 +1,13 @@
 import os
 from ocfl import Store
+from ocfl import Object
+from ocfl import VersionMetadata
+from ocfl.dispositor import Dispositor
 import re
 import shutil
 import json
-from ocfl.dispositor import Dispositor
+import datetime
+import logging
 
 # Custom exception for OCFL-related problems
 class OCFLException(Exception):
@@ -66,20 +70,27 @@ class OCFLPY():
         for hash in version_state.keys():
             file_list=file_list+version_state[hash]
         return file_list
+
     # Creates a new object, i.e. a new folder in staging
-    def new_object(self,id):
+    def create_object(self,id):
         # Get a normalized id, i.e. without problematic special characters
         normalized_id = self.encode_id(id)
-        # Check if object already exists, either in store ...
-        if id in list_objects():
-               raise OCFLException("Object already exists in store")
-        # ... or in staging
-        staging_object = os.path.join(self.staging_dir,normalized_id)
-        if os.path.exists(staging_object):
-               raise OCFLException("Object already exists in staging")
-        # Create folder in staging area
-        os.mkdir(staging_object)
         self.staging_objects[id] = normalized_id
+        os.mkdir(self.get_staging_object_path(id))
+        new_object = Object(identifier=id,path=self.get_staging_object_path(id))
+        return 0
+    #     # Get a normalized id, i.e. without problematic special characters
+    #     normalized_id = self.encode_id(id)
+    #     # Check if object already exists, either in store ...
+    #     if id in list_objects():
+    #            raise OCFLException("Object already exists in store")
+    #     # ... or in staging
+    #     staging_object = os.path.join(self.staging_dir,normalized_id)
+    #     if os.path.exists(staging_object):
+    #            raise OCFLException("Object already exists in staging")
+    #     # Create folder in staging area
+    #     os.mkdir(staging_object)
+    #     self.staging_objects[id] = normalized_id
 
     # Opens an existing object from the store and makes it available in staging
     def open_object(self,id):
@@ -93,30 +104,46 @@ class OCFLPY():
         if not(id in self.staging_objects.keys()) and os.path.exists(staging_object):
                raise OCFLException("Object folder already exists in staging")
         else:
-            # Create folder
-            if not os.path.exists(staging_object):
-                os.mkdir(staging_object)
-            # Copy files
+            # Extract files
             object_path=self.get_object_path(id)
             object_inventory=self.get_object_inventory(id)
-            #object_head_content=os.path.join(os.path.join(object_path,object_inventory['head']),"content")
-            #print("Copytree from " + object_head_content + " to " + staging_object)
-            #shutil.copytree(object_head_content,staging_object)
             current_version=object_inventory['head']
-            for hash in object_inventory['versions'][current_version]['state']:
-                src_file = os.path.join(object_path,object_inventory['manifest'][hash][0])
-                tgt_file = os.path.join(staging_object,object_inventory['versions'][current_version]['state'][hash][0])
-                # Split target into path and file name
-                split_tgt = os.path.split(tgt_file)
-                # If the path doesn't exist create it
-                if not os.path.exists(split_tgt[0]):
-                    os.mkdir(split_tgt[0])
-                shutil.copy(src_file,tgt_file)
-            # Add to list of staged objects
+            current_object = Object(path=object_path)
+            current_object.extract(object_path,current_version,staging_object)
+            # Convert stored creation time and remove the timezone Z marking UTC
+            creation_time = datetime.datetime.fromisoformat(object_inventory['versions'][current_version]['created'].replace("Z","")).timestamp()
+            # Update mtime
+            for root, dirs, files in os.walk(staging_object):
+                for f in dirs + files:
+                    file_name = os.path.join(root,f)
+                    stat = os.stat(file_name)
+                    os.utime(file_name, times=(stat.st_atime, creation_time))
+            # Add to list of staged objects            
             self.staging_objects[id] = normalized_id
 
     # Commit an object creating a new version
     def commit_object(self,id):
+        logging.info("OCFL COMMIT: " + id)
+        src_dir = self.get_staging_object_path(id)
+        # Create object from staging
+        object = Object(identifier=id)
+        # Check if the ID is already in the store and create a new object if it is not yet in the store
+        if id not in self.list_object_ids():
+            # Convert the files in src_dir into an OCFL object in new_object
+            new_object = src_dir + "_obj"
+            username = os.getlogin()
+            hostname = os.uname()[1] # Probably problematic on windows
+            creation_time = datetime.datetime.utcnow().isoformat()+"Z"
+            metadata = VersionMetadata(created=creation_time,name=username,address=username + "@" + hostname, message="Created object " + id)
+            object.create(src_dir,metadata=metadata,objdir=new_object)
+            # Add the new object 
+            self.store.add(new_object)
+            shutil.rmtree(new_object)
+        # Update an object that is already in the store
+        else:
+            stored_object = self.store.object_path(id)
+            # Update object in store
+            object.update(stored_object,src_dir)
         return 0
     
     # Revert a staged object
@@ -125,4 +152,6 @@ class OCFLPY():
         if id in self.staging_objects:
             # Just remove the complete folder from staging
             shutil.rmtree(self.get_staging_object_path(id))
+            # Also remove the ide from staging objects
+            self.staging_objects.pop(id)
         return 0
