@@ -42,6 +42,8 @@ class OCFLFS(Fuse):
         # Keep track of the current project id
         self.current_object_id = ""
 
+    # FUSE methods
+    
     # int(* 	getattr )(const char *, struct stat *, struct fuse_file_info *fi)
     def getattr(self, path):
         logging.info("GETATTR: " + path)
