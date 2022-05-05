@@ -146,7 +146,11 @@ class OCFLFS(Fuse):
         # One of the objects or
         # One of the folders in the current objects or
         # One of the files in the current object
-        if path == self.object_path or \
+        if path.endswith("/commit"):
+            object_id=self.current_object_id
+            self.ocflpy.commit_object(object_id)
+            return 0
+        elif path == self.object_path or \
             os.path.split(path)[0] == self.object_path or \
             self.is_staged_object_file(path) or \
             self.is_staged_object_dir(path):
@@ -285,16 +289,16 @@ class OCFLFS(Fuse):
     # int(* 	create )(const char *, mode_t, struct fuse_file_info *)
     def create(self, path, mode ,file_info):
         logging.info("CREATE: " + path + " - Mode: " + str(mode) + " - File Info: " + str(file_info))
-        if path.endswith("/commit"):
-            object_id=self.current_object_id
-            self.ocflpy.commit_object(object_id)
-        else:
-            if self.current_object_id != "":
-                logging.info("ADDING " + path)
-                # Check if file exists and otherwise create it
-                object_file_path=self.get_staged_object_path(path)
-                if not os.path.exists(object_file_path):
-                    open(object_file_path,'wb').close()
+        # if path.endswith("/commit"):
+        #     object_id=self.current_object_id
+        #     self.ocflpy.commit_object(object_id)
+        # else:
+        if self.current_object_id != "":
+            logging.info("ADDING " + path)
+            # Check if file exists and otherwise create it
+            object_file_path=self.get_staged_object_path(path)
+            if not os.path.exists(object_file_path):
+                open(object_file_path,'wb').close()
         return 0
     
     # # int(* 	lock )(const char *, struct fuse_file_info *, int cmd, struct flock *)
