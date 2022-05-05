@@ -306,10 +306,14 @@ class OCFLFS(Fuse):
                 self.ocflpy.revert_object(self.current_object_id)
                 self.current_object_id = ""
         split_path=os.path.split(path)
+        # We access an (unstaged) object
         if split_path[0] == self.object_path and split_path[1] != "":
             object_id=split_path[1]
             id=self.ocflpy.decode_id(object_id)
-            self.ocflpy.open_object(id)
+            # Stage unstaged object if necessary
+            if self.current_object_id == "":
+                self.current_object_id=self.ocflpy.decode_id(object_id)
+                self.ocflpy.open_object(id)
         return 0
     
     # int(* 	create )(const char *, mode_t, struct fuse_file_info *)
