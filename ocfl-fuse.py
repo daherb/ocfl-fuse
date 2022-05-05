@@ -10,7 +10,7 @@
 import os, stat, errno
 import fuse
 from fuse import Fuse
-from ocflpy import OCFLPY
+from ocfl_wrapper import OCFLPY
 import shutil
 import logging
 
