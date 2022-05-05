@@ -41,6 +41,7 @@ class OCFLFS(Fuse):
         self.object_path = "/objects"
         # Keep track of the current project id
         self.current_object_id = ""
+        self.new_objects = []
 
     # FUSE methods
     
@@ -58,8 +59,8 @@ class OCFLFS(Fuse):
         elif path == self.object_path:
             st.st_mode = stat.S_IFDIR | 0o755
             st.st_nlink = 2
-        # Path containing all objects
-        elif split_path[0] == self.object_path:
+        # Path of a staged object
+        elif split_path[0] == self.object_path and self.ocflpy.decode_id(split_path[1]) in self.ocflpy.list_object_ids() + self.new_objects:
             st.st_mode = stat.S_IFDIR | 0o755
             st.st_nlink = 2
         # Folders in the current object
@@ -92,10 +93,27 @@ class OCFLFS(Fuse):
     #     logging.info("MKNOD: " + path)
     #     return 0
 
-    # # int(* 	mkdir )(const char *, mode_t)
-    # def mkdir(self, path,mode):
-    #     logging.info("MKDIR: " + path)
-    #     return 0
+    # int(* 	mkdir )(const char *, mode_t)
+    def mkdir(self, path,mode):
+        logging.info("MKDIR: " + path)
+        # Not in object directory or any subdirectories
+        if not path.startswith(self.object_path):
+            return -errno.EROFS
+        else:
+            split_path = os.path.split(path)
+            # New object
+            if split_path[0] == self.object_path and split_path[1] != "":
+                object_id=self.ocflpy.decode_id(split_path[1])
+                self.new_objects.append(object_id)
+                self.ocflpy.create_object(object_id)
+            # New folder in staged object
+            elif self.current_object_id != "" \
+                 and self.is_staged_object_path(path) and \
+                 not os.path.exists(self.get_staged_object_path(path)):
+                os.mkdir(self.get_staged_object_path(path))
+            else:
+                return -errno.ENOENT
+        return 0
     
     # # int(* 	unlink )(const char *)
     # def unlink(self, path):
@@ -240,7 +258,7 @@ class OCFLFS(Fuse):
                 yield fuse.Direntry(r)
         # The object list
         elif path == self.object_path:
-            for oid in self.ocflpy.list_object_ids():
+            for oid in self.ocflpy.list_object_ids() + self.new_objects:
                 normalized_id=self.ocflpy.encode_id(oid)
                 yield fuse.Direntry(normalized_id)
         # Listing the content of an unstaged object
