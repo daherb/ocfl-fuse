@@ -79,8 +79,8 @@ class OCFLFS(Fuse):
         elif path.endswith("commit"):
             st.st_mode = stat.S_IFREG | 0o755
             st.st_nlink = 1
-            st.st_size = 0
-            st.st_mtime=0
+            st.st_size = 255
+            st.st_mtime = 0
         else:
             return -errno.ENOENT
         return st
@@ -192,6 +192,8 @@ class OCFLFS(Fuse):
             data = f.read(size)
             f.close()
             return data
+        elif path.endswith("/commit"):
+            return b'Committing object ' + bytes(self.current_object_id + "\n",'utf-8')
         return -errno.ENOENT
     
     # int(* 	write )(const char *, const char *, size_t, off_t, struct fuse_file_info *)
