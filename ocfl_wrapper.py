@@ -130,28 +130,29 @@ class OCFLPY():
             self.staging_objects[id] = normalized_id
 
     # Commit an object creating a new version
-    def commit_object(self,id):
+    def commit_object(self,id,name,address):
         logging.info("OCFL COMMIT: " + id)
         src_dir = self.get_staging_object_path(id)
         # Create object from staging
         object = Object(identifier=id)
+        # Create metadata for new version
+        creation_time = datetime.datetime.utcnow().isoformat()+"Z"
         # Check if the ID is already in the store and create a new object if it is not yet in the store
         if id not in self.list_object_ids():
             # Convert the files in src_dir into an OCFL object in new_object
             new_object = src_dir + "_obj"
-            username = os.getlogin()
-            hostname = os.uname()[1] # Probably problematic on windows
-            creation_time = datetime.datetime.utcnow().isoformat()+"Z"
-            metadata = VersionMetadata(created=creation_time,name=username,address=username + "@" + hostname, message="Created object " + id)
+            metadata = VersionMetadata(created=creation_time,name=name,address=address, message="Created object " + id)
             object.create(src_dir,metadata=metadata,objdir=new_object)
             # Add the new object 
             self.store.add(new_object)
             shutil.rmtree(new_object)
         # Update an object that is already in the store
         else:
-            stored_object = self.store.object_path(id)
+            stored_object = os.path.join(self.root,self.store.object_path(id))
+            logging.info("STORED OBJECT " + stored_object)
             # Update object in store
-            object.update(stored_object,src_dir)
+            metadata = VersionMetadata(created=creation_time,name=name,address=address, message="Updated object " + id)
+            object.update(stored_object,src_dir,metadata)
         return 0
     
     # Revert a staged object

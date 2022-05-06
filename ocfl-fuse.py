@@ -177,7 +177,9 @@ class OCFLFS(Fuse):
         # One of the files in the current object
         if path.endswith("/commit"):
             object_id=self.current_object_id
-            self.ocflpy.commit_object(object_id)
+            username = os.getlogin()
+            hostname = os.uname()[1] # Probably problematic on windows
+            self.ocflpy.commit_object(object_id,name=username,address="mailto:" + username + "@" + hostname)
             if object_id in self.new_objects:
                 self.new_objects.remove(object_id)
             return 0
