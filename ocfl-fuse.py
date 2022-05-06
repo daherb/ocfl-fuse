@@ -320,8 +320,9 @@ class OCFLFS(Fuse):
             id=self.ocflpy.decode_id(object_id)
             # Stage unstaged object if necessary
             if self.current_object_id == "":
+                if id in self.ocflpy.list_object_ids():
+                    self.ocflpy.open_object(id)
                 self.current_object_id=self.ocflpy.decode_id(object_id)
-                self.ocflpy.open_object(id)
         return 0
     
     # int(* 	create )(const char *, mode_t, struct fuse_file_info *)
