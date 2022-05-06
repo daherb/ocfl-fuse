@@ -41,7 +41,7 @@ class OCFLPY():
         # The staging dir
         self.staging_dir = staging_dir
         # create if missing
-        if not(os.path.exists(staging_dir)):
+        if not os.path.exists(staging_dir):
                os.mkdir(staging_dir)
         # Keep track of staging objects
         self.staging_objects = {}
