@@ -35,6 +35,9 @@ class OCFLPY():
         self.root = root
         # Load the store
         self.store = Store(root,disposition=disposition)
+        # Initialize if the root does not exist
+        if not os.path.exists(root):
+            self.store.initialize()
         # The staging dir
         self.staging_dir = staging_dir
         # create if missing
