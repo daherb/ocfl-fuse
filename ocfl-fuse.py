@@ -331,10 +331,6 @@ class OCFLFS(Fuse):
     # int(* 	create )(const char *, mode_t, struct fuse_file_info *)
     def create(self, path, mode ,file_info):
         logging.info("CREATE: " + path + " - Mode: " + str(mode) + " - File Info: " + str(file_info))
-        # if path.endswith("/commit"):
-        #     object_id=self.current_object_id
-        #     self.ocflpy.commit_object(object_id)
-        # else:
         if self.current_object_id != "":
             logging.info("ADDING " + path)
             # Check if file exists and otherwise create it
