@@ -117,25 +117,32 @@ class OCFLFS(Fuse):
                 return -errno.ENOENT
         return 0
     
-    # # int(* 	unlink )(const char *)
-    # def unlink(self, path):
-    #     logging.info("UNLINK: " + path)
-    #     return 0
+    # int(* 	unlink )(const char *)
+    def unlink(self, path):
+        logging.info("UNLINK: " + path)
+        split_path=os.path.split(path)
+        if path.startswith(self.object_path) and split_path[0] != self.object_path:
+            os.remove(self.get_staged_object_path(path))
+        return 0
     
-    # # int(* 	rmdir )(const char *)
-    # def rmdir(self, path):
-    #     logging.info("RMDIR: " + path)
-    #     return 0
+    # int(* 	rmdir )(const char *)
+    def rmdir(self, path):
+        logging.info("RMDIR: " + path)
+        split_path=os.path.split(path)
+        if path.startswith(self.object_path) and split_path[0] != self.object_path:
+            os.removedirs(self.get_staged_object_path(path))
+        return 0
     
     # # int(* 	symlink )(const char *, const char *)
     # def symlink(self, target, path):
     #     logging.info("SYMLINK: " + path)
     #     return 0
     
-    # # int(* 	rename )(const char *, const char *, unsigned int flags)
-    # def rename(self, oldpath, path, flags):
-    #     logging.info("RENAME: " + path)
-    #     return 0
+    # int(* 	rename )(const char *, const char *, unsigned int flags)
+    def rename(self, oldpath, path):
+        logging.info("RENAME: " + oldpath + " TO " + path + " BY RENAMING " + self.get_staged_object_path(oldpath) + " INTO " + self.get_staged_object_path(path))
+        os.rename(self.get_staged_object_path(oldpath),self.get_staged_object_path(path))
+        return 0
     
     # # int(* 	link )(const char *, const char *)
     # def link(self, oldpath, path):
