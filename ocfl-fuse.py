@@ -178,6 +178,8 @@ class OCFLFS(Fuse):
         if path.endswith("/commit"):
             object_id=self.current_object_id
             self.ocflpy.commit_object(object_id)
+            if object_id in self.new_objects:
+                self.new_objects.remove(object_id)
             return 0
         elif path == self.object_path or \
             os.path.split(path)[0] == self.object_path or \
@@ -308,6 +310,8 @@ class OCFLFS(Fuse):
             # Revert if we change back into the object path
             if self.current_object_id != "":
                 self.ocflpy.revert_object(self.current_object_id)
+                if self.current_object_id in self.new_objects:
+                    self.new_objects.remove(self.current_object_id)
                 self.current_object_id = ""
         split_path=os.path.split(path)
         # We access an (unstaged) object
