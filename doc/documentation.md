@@ -10,7 +10,15 @@ The structure is the following:
     | store |      |         |      |                 |      |              |      |      |      |      |
     |_______|      |_________|      |_________________|      |______________|      |______|      |______|
 
+## How to use it
 
+- Install dependencies, see [README.md](../README.md)
+- Run `python ocfl-fuse.py -o ocfl_root=<ocfl-store> -o staging_directory=<staging-directory> <mount-point> [-f|-d]`
+- Access objects via `<mount-point>`
+
+If `<ocfl-store>` and/or `<staging-directory>` are missing they are created.
+The parameters `-f` does not detach the process into the background and `-d`
+enables debug output (implies `-f`).
 
 ## Transactions
 
