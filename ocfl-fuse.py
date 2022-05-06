@@ -420,7 +420,8 @@ def main():
 Userspace ocfl client
 
 """ + Fuse.fusage
-    logging.basicConfig(level=logging.INFO)
+    # logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.WARNING)
     server = OCFLFS(version="%prog " + fuse.__version__,
                      usage=usage,
                      dash_s_do='whine')
@@ -437,7 +438,7 @@ Userspace ocfl client
         server.ocfl_root=server.cmdline[1][0];
     try:
         # server.store=Store(server.ocfl_root)
-        server.ocflpy = OCFLPY(server.ocfl_root,server.staging_directory,'pairtree')
+        server.ocflpy = OCFLPY(server.ocfl_root,server.staging_directory,disposition='pairtree',verbose=True)
         # server.store.validate()
     except AttributeError as e:
         print("No OCFL root or staging directory given")

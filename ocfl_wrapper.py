@@ -30,11 +30,19 @@ class OCFLPY():
     def decode_id(self,id):
         return self.dispositor.decode(id)
 
-    def __init__(self,root,staging_dir,disposition):
+    def __init__(self,root,staging_dir,disposition, verbose=False):
         # The store root
         self.root = root
         # Load the store
         self.store = Store(root,disposition=disposition)
+        self.store.log = logging.getLogger(name="ocfl.store")
+        self.store.log.setLevel(level=logging.INFO if verbose else logging.WARN)
+        self.log=logging.getLogger("ocfl_wrapper")
+        self.log.info(str(self.store.dispositor))
+        if not verbose:
+            self.log.setLevel(logging.WARNING)
+        else:
+            self.log.setLevel(logging.DEBUG)
         # Initialize if the root does not exist
         if not os.path.exists(root):
             self.store.initialize()
@@ -60,6 +68,7 @@ class OCFLPY():
 
     # Returns the path of the staging version of an object
     def get_staging_object_path(self,id):
+        self.log.info("STAGING OBJECTS: " + str(self.staging_objects))
         return os.path.join(self.staging_dir,self.staging_objects[id])
 
     # Get the path for an object id
@@ -68,6 +77,7 @@ class OCFLPY():
 
     # Get the inventory for an object id
     def get_object_inventory(self,id):
+        self.log.info("GET INVENTORY")
         return json.load(open(os.path.join(self.get_object_path(id),"inventory.json"),"r"))
 
     # List the files in the most recent version of an object given by its id
@@ -117,6 +127,7 @@ class OCFLPY():
             object_inventory=self.get_object_inventory(id)
             current_version=object_inventory['head']
             current_object = Object(path=object_path)
+            self.log.info("Extracting version " + current_version + " from " + object_path + " to " + staging_object)
             current_object.extract(object_path,current_version,staging_object)
             # Convert stored creation time and remove the timezone Z marking UTC
             creation_time = datetime.datetime.fromisoformat(object_inventory['versions'][current_version]['created'].replace("Z","")).timestamp()
@@ -131,7 +142,7 @@ class OCFLPY():
 
     # Commit an object creating a new version
     def commit_object(self,id,name,address):
-        logging.info("OCFL COMMIT: " + id)
+        self.log.info("OCFL COMMIT: " + id)
         src_dir = self.get_staging_object_path(id)
         # Create object from staging
         object = Object(identifier=id)
@@ -149,7 +160,7 @@ class OCFLPY():
         # Update an object that is already in the store
         else:
             stored_object = os.path.join(self.root,self.store.object_path(id))
-            logging.info("STORED OBJECT " + stored_object)
+            self.log.info("STORED OBJECT " + stored_object)
             # Update object in store
             metadata = VersionMetadata(created=creation_time,name=name,address=address, message="Updated object " + id)
             object.update(stored_object,src_dir,metadata)
