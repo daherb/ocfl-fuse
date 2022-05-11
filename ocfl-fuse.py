@@ -204,7 +204,8 @@ class OCFLFS(Fuse):
             f.close()
             return data
         elif path.endswith("/commit"):
-            return b'Committing object ' + bytes(self.current_object_id + "\n",'utf-8')
+            version = self.ocflpy.get_object_inventory(self.current_object_id)['head']
+            return b'Committing object ' + bytes(self.current_object_id,'utf-8') + b'. New version ' + bytes(version, 'utf-8') + b'\n'
         return -errno.ENOENT
     
     # int(* 	write )(const char *, const char *, size_t, off_t, struct fuse_file_info *)
